@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="stylesheet" href="style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Swear customizer</title>
+  </head>
+  <body>
+        <div class="wrapper">
+            <div class="canvas-container"></div>
+
+            <div class="customizer-container">
+            <h1 id="name"></h1>
+                <div class="color-fabric-container">
+                    <h2>Colors</h2>
+                    <div class="colorOption">
+                          <div class="box-container">
+                          <div class="box electric-blue" data-color="3498db" style="background-color: #3498db;"></div>
+                        </div>
+                          <div class="box-container">
+                          <div class="box neon-pink" data-color="ff0066" style="background-color: #ff0066;"></div>
+                          </div>
+                          <div class="box-container">
+                          <div class="box deep-burgundy" data-color="922b3e" style="background-color: #922b3e;"></div>
+                          </div>
+                          <div class="box-container">
+                          <div class="box olive-green" data-color="4caf50" style="background-color: #4caf50;"></div>
+                          </div>
+                          <div class="box-container">
+                          <div class="box jet-black" data-color="000000" style="background-color: #000000;"></div>
+                          </div>
+                   
+                 
+                    </div>
+
+                    <h2>Fabrics</h2>
+                    <div class="fabricOption">
+                        <div class="fabric-container leather-container" >
+                            <div class="box-fabric leather" id="leatherFabric"></div>
+                            </div> 
+                        <div class="fabric-container denim-container" >
+                            <div class="box-fabric denim" id="denimFabric"></div>
+                            </div> 
+                        <div class="fabric-container metal-leather-container" >
+                            <div class="box-fabric metal-leather" id="metalLeatherFabric"></div>
+                            </div>
+                        <div class="fabric-container velvet-container" >
+                            <div class="box-fabric velvet" id="velvetFabric"></div>
+                            </div> 
+                        <div class="fabric-container polyester-container" >
+                            <div class="box-fabric polyester" id="polyesterFabric"></div>
+                        </div> 
+                    </div>
+                    <div class="size-container">
+                        <label for="size">Size</label>
+                        <select name="size" id="size">
+                        <option value="" disabled selected>Select</option>
+                        <option value="size-36">36</option>
+                        <option value="size-37">37</option>
+                        <option value="size-38">38</option>
+                        <option value="size-39">39</option>
+                        <option value="size-40">40</option>
+                        <option value="size-41">41</option>
+                        <option value="size-42">42</option>
+                        </select>
+                    </div>
+                </div>
+
+                    <button id="orderButton" disabled>Order now</button>
+          </div>
+        </div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
+
+    
