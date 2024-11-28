@@ -55,6 +55,12 @@
                             <p>polyester</p>
                         </div> 
                     </div>
+
+                    <div class="initialsOption">
+                        <input type="text" id="initialsInput" placeholder="Enter initials (e.g., AB)" />
+                        <button id="addInitialsButton">Add Initials</button>
+                      </div>
+
                     <div class="size-container">
                         <label for="size">Size</label>
                         <select name="size" id="size">
@@ -70,8 +76,12 @@
                     </div>
                 </div>
 
-                    <button id="orderButton" disabled>Order now</button>
-          </div>
+                <div class="order-container">
+                    <button id="placeOrderButton">Place Order</button>
+                    <div id="orderFeedback" class="hidden">Your order has been placed successfully!</div>
+                  </div>
+            </div>
+          
         </div>
     <script type="module" src="/main.js"></script>
   </body>

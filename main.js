@@ -3,6 +3,10 @@ import * as THREE from 'three';
 import { GUI } from 'dat.gui';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+//add orbit controls
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -102,9 +106,7 @@ const gui = new GUI();
 const settings = {
   ambientLightIntensity: 1.9,
   directionalLightIntensity: 1.3,
-  shoeRotationSpeed: 0.01,
 };
-let shoeRotationSpeed = 0.01;
 
 gui.add(settings, 'ambientLightIntensity', 0, 3, 0.1).onChange((value) => {
   ambientLight.intensity = value;
@@ -112,9 +114,7 @@ gui.add(settings, 'ambientLightIntensity', 0, 3, 0.1).onChange((value) => {
 gui.add(settings, 'directionalLightIntensity', 0, 3, 0.1).onChange((value) => {
   directionalLight.intensity = value;
 });
-gui.add(settings, 'shoeRotationSpeed', 0, 0.1, 0.01).onChange((value) => {
-  shoeRotationSpeed = value;
-});
+
 
 // Color selection setup
 let selectedPart = null; // Store the currently selected part
@@ -198,6 +198,60 @@ document.querySelectorAll('.fabricOption .fabric-container .box').forEach((box) 
 });
 
 
+function addInitialsToOutside2(text) {
+  // Find the "outside_2" part in the shoe model
+  const outside2Part = interactableObjects.find((obj) => obj.name === 'outside_2');
+
+  if (!outside2Part) {
+    console.log('Error: Could not find outside_2 part.');
+    return;
+  }
+
+  const fontLoader = new FontLoader();
+  fontLoader.load('/fonts/helvetiker_bold.typeface.json', (font) => {
+    console.log('Font loaded successfully');
+
+    const textGeometry = new TextGeometry(text, {
+      font: font,
+      size: 1, // Increased size for better visibility
+      depth: 0.05, // Increased thickness for a 3D effect
+      curveSegments: 12,
+    });
+
+    const textMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+    const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+    // Calculate the bounding box of "outside_2" for positioning
+    const boundingBox = new THREE.Box3().setFromObject(outside2Part);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    boundingBox.getSize(size);
+    boundingBox.getCenter(center);
+    textMesh.rotation.y = Math.PI / 2;
+    textMesh.position.set(center.x + 2.2, center.y + size.y / 2 + 1.2, center.z - 0.4);
+    boundingBox.getSize(size);
+    boundingBox.getCenter(center);
+    // Set the text position relative to the bounding box
+    textMesh.castShadow = true;
+    textMesh.receiveShadow = true;
+
+    // Attach the initials to the "outside_2" part
+    outside2Part.add(textMesh);
+    console.log(`Added initials "${text}" to outside_2`);
+  });
+}
+
+// Add event listener to the initials input
+document.getElementById('addInitialsButton').addEventListener('click', () => {
+  const initialsInput = document.getElementById('initialsInput').value;
+
+  if (initialsInput) {
+    addInitialsToOutside2(initialsInput);
+  } else {
+    console.log('No initials provided.');
+  }
+});
+
 
 // Raycaster setup
 const raycaster = new THREE.Raycaster();
@@ -228,6 +282,44 @@ canvas.addEventListener('click', (event) => {
     console.log(`Selected part: ${intersectedObject.name}`);
   }
 });
+
+// Handle "Place Order" Button Click
+document.getElementById('placeOrderButton').addEventListener('click', () => {
+  // Collect configuration details
+  const orderDetails = {
+    color: document.querySelector('.colorOption .selected')?.getAttribute('data-color') || 'Default Color',
+    fabric: document.querySelector('.fabricOption .selected')?.getAttribute('data-fabric') || 'Default Fabric',
+    initials: document.getElementById('initialsInput')?.value || 'None',
+  };
+
+  console.log('Order Details:', orderDetails);
+
+  // Show feedback
+  const feedbackElement = document.getElementById('orderFeedback');
+  feedbackElement.innerHTML = `
+    <p>Your order has been placed successfully!</p>
+    <p><strong>Configuration:</strong></p>
+    <ul>
+      <li>Color: ${orderDetails.color}</li>
+      <li>Fabric: ${orderDetails.fabric}</li>
+      <li>Initials: ${orderDetails.initials}</li>
+    </ul>
+  `;
+  feedbackElement.classList.remove('hidden');
+
+  // Optional: Add animation or styling to the feedback
+  feedbackElement.style.opacity = 1;
+  feedbackElement.style.transform = 'scale(1.1)';
+  setTimeout(() => {
+    feedbackElement.style.transform = 'scale(1)';
+  }, 300);
+});
+
+
+// Orbit controls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+  
 
 function animate() {
   requestAnimationFrame(animate);
