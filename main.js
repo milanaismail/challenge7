@@ -119,6 +119,41 @@ gui.add(settings, 'shoeRotationSpeed', 0, 0.1, 0.01).onChange((value) => {
 // Color selection setup
 let selectedPart = null; // Store the currently selected part
 
+const fabricTextures = {
+  leatherFabric: '/fabrics/leather.jpg',
+  denimFabric: '/fabrics/denim.jpg',
+  velvetFabric: '/fabrics/velvet.png',
+  polyesterFabric: '/fabrics/polyester.png',
+};
+
+// Add event listeners to fabric elements by their IDs
+Object.keys(fabricTextures).forEach((fabricId) => {
+  const fabricElement = document.getElementById(fabricId);
+
+  fabricElement.addEventListener('click', () => {
+    // Remove 'selected' class from all fabric options
+    Object.keys(fabricTextures).forEach((id) => {
+      const element = document.getElementById(id);
+      element.classList.remove('selected');
+    });
+
+    // Add 'selected' class to the clicked fabric
+    fabricElement.classList.add('selected');
+
+    // Get the fabric texture path
+    const fabricTexturePath = fabricTextures[fabricId];
+    const fabricTexture = new THREE.TextureLoader().load(fabricTexturePath);
+
+    // If a part is selected, apply the fabric texture to it
+    if (selectedPart) {
+      selectedPart.material.map = fabricTexture;
+      selectedPart.material.needsUpdate = true; // Ensure the material updates
+      console.log(`Applied fabric ${fabricTexturePath} to ${selectedPart.name}`);
+    }
+  });
+});
+
+
 // Add event listeners to boxes inside the colorOption class
 document.querySelectorAll('.colorOption .box-container .box').forEach((box) => {
   box.addEventListener('click', () => {
@@ -138,6 +173,30 @@ document.querySelectorAll('.colorOption .box-container .box').forEach((box) => {
     }
   });
 });
+
+
+// Add event listeners to boxes inside the fabricOption class
+document.querySelectorAll('.fabricOption .fabric-container .box').forEach((box) => {
+  box.addEventListener('click', () => {
+    // Remove 'selected' class from all boxes
+    document.querySelectorAll('.fabricOption .fabric-container .box').forEach((el) => el.classList.remove('selected'));
+    
+    // Add 'selected' class to the clicked box
+    box.classList.add('selected');
+    
+    // Get the fabric texture
+    const fabricTexturePath = box.getAttribute('data-fabric');
+    const fabricTexture = new THREE.TextureLoader().load(fabricTexturePath);
+
+    // If a part is selected, apply the fabric texture to it
+    if (selectedPart) {
+      selectedPart.material.map = fabricTexture;
+      selectedPart.material.needsUpdate = true; // Ensure the material updates
+      console.log(`Applied fabric ${fabricTexturePath} to ${selectedPart.name}`);
+    }
+  });
+});
+
 
 
 // Raycaster setup

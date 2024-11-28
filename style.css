@@ -46,3 +46,24 @@ body {
   align-items: center;
   gap: 10px;
 }
+
+
+#leatherFabric {
+  background-image: url('/fabrics/leather.jpg');
+}
+
+#denimFabric {
+  background-image: url('/fabrics/denim.jpg');
+}
+
+#metalLeatherFabric {
+  background-image: url('/fabrics/metal-leather.jpg');
+}
+
+#velvetFabric {
+  background-image: url('/fabrics/velvet.jpg');
+}
+
+#polyesterFabric {
+  background-image: url('/fabrics/polyester.jpg');
+}
