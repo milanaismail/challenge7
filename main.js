@@ -117,15 +117,28 @@ gui.add(settings, 'shoeRotationSpeed', 0, 0.1, 0.01).onChange((value) => {
 });
 
 // Color selection setup
-let selectedColor = "#ffffff"; // Default color
+let selectedPart = null; // Store the currently selected part
 
-document.querySelectorAll('.colorOption').forEach((colorOption) => {
-  colorOption.addEventListener('click', () => {
-    document.querySelectorAll('.colorOption').forEach((el) => el.classList.remove('selected'));
-    colorOption.classList.add('selected');
-    selectedColor = colorOption.getAttribute('data-color');
+// Add event listeners to boxes inside the colorOption class
+document.querySelectorAll('.colorOption .box-container .box').forEach((box) => {
+  box.addEventListener('click', () => {
+    // Remove 'selected' class from all boxes
+    document.querySelectorAll('.colorOption .box-container .box').forEach((el) => el.classList.remove('selected'));
+    
+    // Add 'selected' class to the clicked box
+    box.classList.add('selected');
+    
+    // Get the selected color
+    const color = `#${box.getAttribute('data-color')}`; // Convert hex without # to proper hex
+    
+    // If a part is selected, apply the color to it
+    if (selectedPart) {
+      selectedPart.material.color.set(color);
+      console.log(`Changed color of ${selectedPart.name} to ${color}`);
+    }
   });
 });
+
 
 // Raycaster setup
 const raycaster = new THREE.Raycaster();
@@ -143,16 +156,19 @@ canvas.addEventListener('click', (event) => {
   const intersects = raycaster.intersectObjects(interactableObjects);
   if (intersects.length > 0) {
     const intersectedObject = intersects[0].object;
-
+    
     console.log('Intersected:', intersectedObject);
 
-    // Apply the selected color to the intersected object
-    intersectedObject.material.color.set(selectedColor);
-    console.log(`Changed color of ${intersectedObject.name} to ${selectedColor}`);
+    // Store the selected part for color application
+    selectedPart = intersectedObject;
+
+    // Optionally, visually indicate the selection (e.g., by slightly changing opacity)
+    interactableObjects.forEach((obj) => obj.material.opacity = 1); // Reset opacity for all objects
+    intersectedObject.material.opacity = 0.8; // Highlight selected object
+    intersectedObject.material.transparent = true;
+    console.log(`Selected part: ${intersectedObject.name}`);
   }
 });
-
-
 
 function animate() {
   requestAnimationFrame(animate);
