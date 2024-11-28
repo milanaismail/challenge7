@@ -40,7 +40,7 @@ directionalLight.castShadow = true;
 scene.add(directionalLight);
 
 let shoe;
-const shoeMeshes = [];
+const interactableObjects = []; // Array to store objects for raycasting
 
 loader.load('/Shoe_compressed.glb', function (gltf) {
   shoe = gltf.scene;
@@ -70,6 +70,7 @@ loader.load('/Shoe_compressed.glb', function (gltf) {
     if (node.isMesh) {
       node.material = shoeMaterial.clone();
       node.castShadow = true;
+      interactableObjects.push(node); // Add meshes to interactableObjects
     }
   });
 
@@ -90,6 +91,8 @@ cylinder.receiveShadow = true;
 cylinder.castShadow = true;
 cylinder.position.set(0, -0.3, -0.7);
 scene.add(cylinder);
+
+interactableObjects.push(cylinder); // Add the cylinder to interactableObjects
 
 camera.position.y = 0.65;
 camera.position.z = 1;
@@ -113,11 +116,46 @@ gui.add(settings, 'shoeRotationSpeed', 0, 0.1, 0.01).onChange((value) => {
   shoeRotationSpeed = value;
 });
 
+// Color selection setup
+let selectedColor = "#ffffff"; // Default color
+
+document.querySelectorAll('.colorOption').forEach((colorOption) => {
+  colorOption.addEventListener('click', () => {
+    document.querySelectorAll('.colorOption').forEach((el) => el.classList.remove('selected'));
+    colorOption.classList.add('selected');
+    selectedColor = colorOption.getAttribute('data-color');
+  });
+});
+
+// Raycaster setup
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+canvas.addEventListener('click', (event) => {
+  // Calculate mouse position in normalized device coordinates
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  // Update the raycaster
+  raycaster.setFromCamera(mouse, camera);
+
+  // Check for intersections
+  const intersects = raycaster.intersectObjects(interactableObjects);
+  if (intersects.length > 0) {
+    const intersectedObject = intersects[0].object;
+
+    console.log('Intersected:', intersectedObject);
+
+    // Apply the selected color to the intersected object
+    intersectedObject.material.color.set(selectedColor);
+    console.log(`Changed color of ${intersectedObject.name} to ${selectedColor}`);
+  }
+});
+
+
+
 function animate() {
   requestAnimationFrame(animate);
-  /*if (shoe) {
-    shoe.rotation.y += shoeRotationSpeed;
-  }*/
   renderer.render(scene, camera);
 }
 
